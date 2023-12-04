@@ -51,9 +51,9 @@ class _HomeScreenStateCTV extends State<HomeScreenCTV> {
       if (data.isNotEmpty) {
         for (var item in data) {
           final appointment = Appointment.fromJson(item);
-          setState(() {
+          if (appointment.status != '3') {
             appointments.add(appointment);
-          });
+          }
         }
       }
     } else {
@@ -115,7 +115,7 @@ class _HomeScreenStateCTV extends State<HomeScreenCTV> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "-- HOME --",
+                      "~ Trang chủ ~",
                       style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
@@ -165,7 +165,7 @@ class _HomeScreenStateCTV extends State<HomeScreenCTV> {
                     Icons.search,
                     color: Color(0xffb1d8b2),
                   ),
-                  hintText: "Search ...",
+                  hintText: "Tìm kiếm ...",
                 ),
               ),
             ),
@@ -180,8 +180,10 @@ class _HomeScreenStateCTV extends State<HomeScreenCTV> {
             GridView.builder(
               itemCount: listService.length,
               shrinkWrap: true,
-              gridDelegate:
-                  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  childAspectRatio: MediaQuery.of(context).size.width /
+                      (MediaQuery.of(context).size.height / 2)),
               itemBuilder: (context, i) {
                 final x = listService[i];
                 return GestureDetector(
@@ -217,72 +219,10 @@ class _HomeScreenStateCTV extends State<HomeScreenCTV> {
                 );
               },
             ),
-
-            // Text(
-            //   'Theo giờ làm',
-            //   // style: txtTheme.titleLarge,
-            // ),
-            // SizedBox(
-            //   height: 20,
-            // ),
-            // SizedBox(
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //     children: [
-            //       Column(
-            //         children: [
-            //           Text('Ca sang'),
-            //           Radio(
-            //             value: '8h-12h',
-            //             groupValue: selectedTime,
-            //             onChanged: (value) {
-            //               setState(() {
-            //                 selectedTime = value as DateTime;
-            //               });
-            //             },
-            //           ),
-            //         ],
-            //       ),
-            //       Column(
-            //         children: [
-            //           Text('Ca trua'),
-            //           Radio(
-            //             value: '13h-17h',
-            //             groupValue: selectedTime,
-            //             onChanged: (value) {
-            //               setState(() {
-            //                 selectedTime = value as DateTime;
-            //               });
-            //             },
-            //           ),
-            //         ],
-            //       ),
-            //       Column(
-            //         children: [
-            //           Text('Ca toi'),
-            //           Radio(
-            //             value: '18h-22h',
-            //             groupValue: selectedTime,
-            //             onChanged: (value) {
-            //               setState(() {
-            //                 selectedTime = value as DateTime;
-            //               });
-            //             },
-            //           ),
-            //         ],
-            //       ),
-
-            //     ],
-            //   ),
-            // ),
-            // SizedBox(
-            //   height: 15,
-            // ),
             Text(
               'Danh sách',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
             ),
-
             SizedBox(
               height: 15,
             ),
@@ -304,9 +244,11 @@ class _HomeScreenStateCTV extends State<HomeScreenCTV> {
                                 MaterialPageRoute(
                                   builder: (context) {
                                     return ThongTin(
-                                        appointment: appointment,
-                                        user: User(
-                                            name: "", address: "", sdt: ""));
+                                      appointment: appointment,
+                                      // user:
+                                      //     User(name: "", address: "", sdt: ""),
+                                      userID: '',
+                                    );
                                   },
                                 ),
                               );

@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:cleanservice/customer/main2.dart';
 import 'package:cleanservice/models/transaction.dart';
 import 'package:cleanservice/network/uri_api.dart';
+import 'package:cleanservice/widgets/forgot_password_page.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
@@ -16,8 +19,11 @@ import 'ctdv2.dart';
 
 class ThongTin extends StatefulWidget {
   final Appointment appointment;
-  final User user;
-  ThongTin({required this.appointment, required this.user});
+  final String userID;
+  ThongTin({
+    required this.appointment,
+    required this.userID,
+  });
 
   @override
   State<ThongTin> createState() => _ThongTinState();
@@ -38,29 +44,81 @@ class _ThongTinState extends State<ThongTin> {
     }
   }
 
-  Future<void> _updateStatus() async {
-    final idAppointment = widget.appointment.idAppointment;
-    final response = await http.post(
-      Uri.parse(BASEURL.getstatus),
-      body: {
-        'id_appointment': idAppointment,
+  Future<void> _showStatusDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Đang xử lý'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Vui lòng đợi...'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Đóng'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
       },
     );
+  }
 
-    if (response.statusCode == 200) {
-      final responseJson = json.decode(response.body);
+  int? userid;
+  getPref() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-      if (responseJson['value'] == 1) {
-        final newStatus = responseJson['new_status'];
-        setState(() {
-          widget.appointment.status = newStatus.toString();
-        });
+    setState(() {
+      userid = sharedPreferences.getInt(PreProfile.idUser) ?? 0;
+    });
+  }
+
+  Future<void> _updateStatus() async {
+    await _showStatusDialog(); // Hiển thị hộp thoại
+
+    final idAppointment = widget.appointment.idAppointment;
+
+    while (widget.appointment.status != '3') {
+      final response = await http.post(
+        Uri.parse(BASEURL.getstatus),
+        body: {
+          'id_appointment': idAppointment,
+          'id_ctv': userid.toString(),
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseJson = json.decode(response.body);
+
+        if (responseJson['value'] == 1) {
+          final newStatus = responseJson['new_status'];
+          setState(() {
+            widget.appointment.status = newStatus.toString();
+          });
+        } else {
+          // Xử lý lỗi khi cập nhật trạng thái không thành công
+        }
       } else {
-        // Handle error when updating status is unsuccessful
+        // Xử lý lỗi khi không kết nối được với API
       }
-    } else {
-      // Handle error when unable to connect to the API
+
+      await Future.delayed(
+          Duration(seconds: 5)); // Chờ 5 giây trước khi kiểm tra lại
     }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MainPageAd(),
+      ),
+    );
   }
 
   Future<void> fetchAllTransactionData() async {
@@ -99,10 +157,14 @@ class _ThongTinState extends State<ThongTin> {
     );
   }
 
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     fetchAllTransactionData();
+    getPref();
   }
 
   @override
@@ -200,8 +262,8 @@ class _ThongTinState extends State<ThongTin> {
               SizedBox(height: 20.0),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
-                    _updateStatus();
+                  onPressed: () async {
+                    await _updateStatus();
                     Navigator.push(
                       context,
                       MaterialPageRoute(

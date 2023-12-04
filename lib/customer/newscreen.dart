@@ -94,6 +94,7 @@ class _NewScreenState extends State<NewScreen> {
     });
   }
 
+  String? selectedPaymentMethod;
   List<ServiceModel> listService = [];
   List<ServiceModel> selectedServices = []; // Danh sách dịch vụ đã chọn
   // DateTime? selectedDate;
@@ -341,28 +342,28 @@ class _NewScreenState extends State<NewScreen> {
               SizedBox(
                 height: 20,
               ),
-              Text('Phương thức thanh toán khác',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              SizedBox(
-                height: 10,
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.grey[200], // màu nền ban đầu của button
-                  onPrimary: Colors.green, // màu chữ khi button được nhấn
-                  shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(10)), // bo góc cho button
-                ),
-                onPressed: () {},
-                child: Text(
-                  'Thanh toán bằng tiền mặt',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
+              // Text('Phương thức thanh toán khác',
+              //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              // SizedBox(
+              //   height: 10,
+              // ),
+              // ElevatedButton(
+              //   style: ElevatedButton.styleFrom(
+              //     primary: Colors.grey[200], // màu nền ban đầu của button
+              //     onPrimary: Colors.green, // màu chữ khi button được nhấn
+              //     shape: RoundedRectangleBorder(
+              //         borderRadius:
+              //             BorderRadius.circular(10)), // bo góc cho button
+              //   ),
+              //   onPressed: () {},
+              //   child: Text(
+              //     'Tiền mặt',
+              //     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 20,
+              // ),
               Text('Chi tiết giao dịch',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               SizedBox(height: 10),
@@ -419,17 +420,17 @@ class _NewScreenState extends State<NewScreen> {
                       ],
                     ),
                     SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Địa chỉ:',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text('$address')
-                      ],
-                    ),
-                    SizedBox(height: 10),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     Text(
+                    //       'Địa chỉ:',
+                    //       style: TextStyle(fontWeight: FontWeight.bold),
+                    //     ),
+                    //     Text('$address')
+                    //   ],
+                    // ),
+                    // SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -437,7 +438,13 @@ class _NewScreenState extends State<NewScreen> {
                           'Địa chỉ đặt:',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        Text('${addressController1.text}'),
+                        Expanded(
+                          child: Text(
+                            '${addressController1.text}',
+                            overflow: TextOverflow
+                                .ellipsis, // Cắt bớt và hiển thị dấu "..."
+                          ),
+                        ),
                       ],
                     ),
                     SizedBox(height: 10),
@@ -546,110 +553,235 @@ class _NewScreenState extends State<NewScreen> {
               SizedBox(
                 height: 20,
               ),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () async {
-                    await submitAppointment();
-                    await sendPayment();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => HomeScreen(
-                                userID: '',
-                              )),
-                    );
-                  },
-                  child: Text('Thanh toán'),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () async {
-                    await submitAppointment();
-                    await sendPaymentStatus();
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => UsePaypal(
-                            sandboxMode: true,
-                            clientId: "${Constants.clientId}",
-                            secretKey: "${Constants.secretKey}",
-                            returnURL: "${Constants.returnURL}",
-                            cancelURL: "${Constants.cancelURL}",
-                            transactions: const [
-                              {
-                                "amount": {
-                                  "total": '10.12',
-                                  "currency": "USD",
-                                  "details": {
-                                    "subtotal": '10.12',
-                                    "shipping": '0',
-                                    "shipping_discount": 0
-                                  }
-                                },
-                                "description":
-                                    "The payment transaction description.",
-                                // "payment_options": {
-                                //   "allowed_payment_method":
-                                //       "INSTANT_FUNDING_SOURCE"
-                                // },
-                                "item_list": {
-                                  "items": [
+              // Center(
+              //   child: ElevatedButton(
+              //     onPressed: () async {
+              //       await submitAppointment();
+              //       await sendPayment();
+              //       Navigator.push(
+              //         context,
+              //         MaterialPageRoute(
+              //             builder: (context) => HomeScreen(
+              //                   userID: '',
+              //                 )),
+              //       );
+              //     },
+              //     child: Text('Thanh toán'),
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 20,
+              // ),
+              // Center(
+              //   child: ElevatedButton(
+              //     onPressed: () async {
+              //       await submitAppointment();
+              //       await sendPaymentStatus();
+              //       Navigator.of(context).push(
+              //         MaterialPageRoute(
+              //           builder: (BuildContext context) => UsePaypal(
+              //               sandboxMode: true,
+              //               clientId: "${Constants.clientId}",
+              //               secretKey: "${Constants.secretKey}",
+              //               returnURL: "${Constants.returnURL}",
+              //               cancelURL: "${Constants.cancelURL}",
+              //               transactions: const [
+              //                 {
+              //                   "amount": {
+              //                     "total": '10.12',
+              //                     "currency": "USD",
+              //                     "details": {
+              //                       "subtotal": '10.12',
+              //                       "shipping": '0',
+              //                       "shipping_discount": 0
+              //                     }
+              //                   },
+              //                   "description":
+              //                       "The payment transaction description.",
+              //                   // "payment_options": {
+              //                   //   "allowed_payment_method":
+              //                   //       "INSTANT_FUNDING_SOURCE"
+              //                   // },
+              //                   "item_list": {
+              //                     "items": [
+              //                       {
+              //                         "name": "A demo product",
+              //                         "quantity": 1,
+              //                         "price": '10.12',
+              //                         "currency": "USD"
+              //                       }
+              //                     ],
+
+              //                     // shipping address is not required though
+              //                     "shipping_address": {
+              //                       "recipient_name": "Jane Foster",
+              //                       "line1": "Travis County",
+              //                       "line2": "",
+              //                       "city": "Austin",
+              //                       "country_code": "US",
+              //                       "postal_code": "73301",
+              //                       "phone": "+00000000",
+              //                       "state": "Texas"
+              //                     },
+              //                   }
+              //                 }
+              //               ],
+              //               note: "Contact us for any questions on your order.",
+              //               onSuccess: (Map params) async {
+              //                 print("onSuccess: $params");
+              //                 UIHelper.showAlertDialog('Thanh toán thành công',
+              //                     title: 'thành công');
+              //               },
+              //               onError: (error) {
+              //                 print("onError: $error");
+              //                 UIHelper.showAlertDialog('Thanh toán thất bại',
+              //                     title: 'Thất bại');
+              //               },
+              //               onCancel: (params) {
+              //                 print('cancelled: $params');
+              //                 UIHelper.showAlertDialog('Hủy thanh toán',
+              //                     title: 'Hủy');
+              //               }),
+              //         ),
+              //       );
+              //     },
+              //     child: Text('Thanh toán paypal'),
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 20,
+              // ),
+              // Center(
+              //   child: ElevatedButton(
+              //     onPressed: () =>
+              //         _openMomoScreen(context, idAppointment.toString()),
+              //     child: Text('Thanh toán momo'),
+              //   ),
+              // ),
+              Column(
+                children: [
+                  Center(
+                    child: DropdownButton<String>(
+                      value: selectedPaymentMethod,
+                      items: [
+                        DropdownMenuItem(
+                          child: Text('Chọn phương thức thanh toán'),
+                          value: null,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('Tiền mặt'),
+                          value: 'Tiền mặt',
+                        ),
+                        DropdownMenuItem(
+                          child: Text('Paypal'),
+                          value: 'Paypal',
+                        ),
+                        DropdownMenuItem(
+                          child: Text('Momo'),
+                          value: 'Momo',
+                        ),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          selectedPaymentMethod = value!;
+                        });
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                      onPressed: () async {
+                        await submitAppointment();
+                        if (selectedPaymentMethod == 'Paypal') {
+                          await sendPaymentStatus();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (BuildContext context) => UsePaypal(
+                                  sandboxMode: true,
+                                  clientId: "${Constants.clientId}",
+                                  secretKey: "${Constants.secretKey}",
+                                  returnURL: "${Constants.returnURL}",
+                                  cancelURL: "${Constants.cancelURL}",
+                                  transactions: const [
                                     {
-                                      "name": "A demo product",
-                                      "quantity": 1,
-                                      "price": '10.12',
-                                      "currency": "USD"
+                                      "amount": {
+                                        "total": '10.12',
+                                        "currency": "USD",
+                                        "details": {
+                                          "subtotal": '10.12',
+                                          "shipping": '0',
+                                          "shipping_discount": 0
+                                        }
+                                      },
+                                      "description":
+                                          "The payment transaction description.",
+                                      // "payment_options": {
+                                      //   "allowed_payment_method":
+                                      //       "INSTANT_FUNDING_SOURCE"
+                                      // },
+                                      "item_list": {
+                                        "items": [
+                                          {
+                                            "name": "A demo product",
+                                            "quantity": 1,
+                                            "price": '10.12',
+                                            "currency": "USD"
+                                          }
+                                        ],
+
+                                        // shipping address is not required though
+                                        "shipping_address": {
+                                          "recipient_name": "Jane Foster",
+                                          "line1": "Travis County",
+                                          "line2": "",
+                                          "city": "Austin",
+                                          "country_code": "US",
+                                          "postal_code": "73301",
+                                          "phone": "+00000000",
+                                          "state": "Texas"
+                                        },
+                                      }
                                     }
                                   ],
-
-                                  // shipping address is not required though
-                                  "shipping_address": {
-                                    "recipient_name": "Jane Foster",
-                                    "line1": "Travis County",
-                                    "line2": "",
-                                    "city": "Austin",
-                                    "country_code": "US",
-                                    "postal_code": "73301",
-                                    "phone": "+00000000",
-                                    "state": "Texas"
+                                  note:
+                                      "Contact us for any questions on your order.",
+                                  onSuccess: (Map params) async {
+                                    print("onSuccess: $params");
+                                    UIHelper.showAlertDialog(
+                                        'Thanh toán thành công',
+                                        title: 'thành công');
                                   },
-                                }
-                              }
-                            ],
-                            note: "Contact us for any questions on your order.",
-                            onSuccess: (Map params) async {
-                              print("onSuccess: $params");
-                              UIHelper.showAlertDialog('Thanh toán thành công',
-                                  title: 'thành công');
-                            },
-                            onError: (error) {
-                              print("onError: $error");
-                              UIHelper.showAlertDialog('Thanh toán thất bại',
-                                  title: 'Thất bại');
-                            },
-                            onCancel: (params) {
-                              print('cancelled: $params');
-                              UIHelper.showAlertDialog('Hủy thanh toán',
-                                  title: 'Hủy');
-                            }),
+                                  onError: (error) {
+                                    print("onError: $error");
+                                    UIHelper.showAlertDialog(
+                                        'Thanh toán thất bại',
+                                        title: 'Thất bại');
+                                  },
+                                  onCancel: (params) {
+                                    print('cancelled: $params');
+                                    UIHelper.showAlertDialog('Hủy thanh toán',
+                                        title: 'Hủy');
+                                  }),
+                            ),
+                          );
+                        } else if (selectedPaymentMethod == 'Momo') {
+                          _openMomoScreen(context, idAppointment.toString());
+                        } else {
+                          await sendPayment();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MainPageAC(),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        textStyle: TextStyle(fontSize: 25),
+                        primary: Colors.green,
                       ),
-                    );
-                  },
-                  child: Text('Thanh toán paypal'),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () =>
-                      _openMomoScreen(context, idAppointment.toString()),
-                  child: Text('Thanh toán momo'),
-                ),
+                      child: Text('Thanh toán')),
+                ],
               ),
             ],
           ),

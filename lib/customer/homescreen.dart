@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:cleanservice/customer/cardservice.dart';
+import 'package:cleanservice/customer/main2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,7 +11,6 @@ import '../models/service_model.dart';
 import '../network/uri_api.dart';
 import 'package:http/http.dart' as http;
 
-import 'cardservice.dart';
 import 'historypage.dart';
 import 'main3.dart';
 
@@ -81,17 +82,24 @@ class _HomeSceenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "-- HOME --",
-                  style: TextStyle(
+            GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MainPageAC()));
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "~ Trang chủ ~",
+                    style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
-                      color: Colors.green),
-                )
-              ],
+                      color: Colors.green,
+                    ),
+                  ),
+                ],
+              ),
             ),
             IconButton(
               onPressed: () {
@@ -144,7 +152,7 @@ class _HomeSceenState extends State<HomeScreen> {
                 Icons.search,
                 color: Color(0xffb1d8b2),
               ),
-              hintText: "Search ...",
+              hintText: "Tìm kiếm...",
             ),
           ),
         ),
@@ -157,32 +165,35 @@ class _HomeSceenState extends State<HomeScreen> {
         GridView.builder(
           itemCount: listService.length,
           shrinkWrap: true,
-          gridDelegate:
-              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+            childAspectRatio: MediaQuery.of(context).size.width /
+                (MediaQuery.of(context).size.height / 2),
+          ),
           itemBuilder: (context, i) {
             final x = listService[i];
             return GestureDetector(
-              // Wrap CardService with GestureDetector
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => MainPage2(
-                            idService: x.idservice, //test id
-                            priceService: x.price,
-                            nameService: x.name,
-                            selectedDate: widget.selectedDate,
-                            selectedTime: widget.selectedTime,
-                            serviceModel: ServiceModel(
-                                idservice: '',
-                                name: '',
-                                description: '',
-                                image: '',
-                                price: '',
-                                status: '',
-                                createdat: ''),
-                            //idService: x.idservice,
-                          )),
+                    builder: (context) => MainPage2(
+                      idService: x.idservice,
+                      priceService: x.price,
+                      nameService: x.name,
+                      selectedDate: widget.selectedDate,
+                      selectedTime: widget.selectedTime,
+                      serviceModel: ServiceModel(
+                        idservice: '',
+                        name: '',
+                        description: '',
+                        image: '',
+                        price: '',
+                        status: '',
+                        createdat: '',
+                      ),
+                    ),
+                  ),
                 );
               },
               child: CardService(

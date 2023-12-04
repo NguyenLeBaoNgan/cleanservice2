@@ -155,6 +155,136 @@ class _HistoryPageState extends State<HistoryPage> {
     }
   }
 
+  void _confirmCompletion(String idAppointment) async {
+    // Gửi request để cập nhật trạng thái lên server
+    final response = await http.post(
+      Uri.parse(BASEURL.confirmCompletion),
+      body: {
+        'id_appointment': idAppointment,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['value'] == 1) {
+        // Cập nhật trạng thái trong danh sách appointments
+        setState(() {
+          var confirmedAppointment = appointments.firstWhere(
+            (appointment) => appointment.idAppointment == idAppointment,
+          );
+          confirmedAppointment.status = '3'; // Trạng thái đã hoàn thành
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Đã xác nhận hoàn thành lịch đặt.'),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text('Lỗi khi xác nhận hoàn thành: ${responseData['message']}'),
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Lỗi khi kết nối đến server.'),
+        ),
+      );
+    }
+  }
+
+  fetchAppointments() async {
+    var urllistApp = Uri.parse(BASEURL.get_appointments);
+    final response = await http.get(urllistApp);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      if (data.isNotEmpty) {
+        for (var item in data) {
+          final appointment = Appointment.fromJson(item);
+          if (appointment.status == '3' &&
+              (appointment.idctv ?? '').toString() ==
+                  (userid ?? '').toString()) {
+            setState(() {
+              appointments.add(appointment);
+            });
+          }
+        }
+      }
+    } else {
+      throw Exception('Failed to fetch appointments from API');
+    }
+  }
+
+  Future<void> _showCtvInfoDialog(String? idCtv) async {
+    if (idCtv != null) {
+      var url = Uri.parse(BASEURL.getbyidctv);
+      var response = await http.post(
+        url,
+        body: {'id_ctv': idCtv},
+      );
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        if (data['value'] == 1) {
+          var userData = data['data'];
+          _displayCtvInfoDialog(
+              userData['name'], userData['phone'], userData['email']);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content:
+                  Text('Chưa có cộng tác viên nhận đơn. Vui lòng chờ thêm.'),
+            ),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi khi kết nối đến server.'),
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('ID CTV is null.'),
+        ),
+      );
+    }
+  }
+
+  void _displayCtvInfoDialog(String name, String sdt, String email) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Thông tin CTV'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Tên: $name'),
+              Text('Số Điện Thoại: $sdt'),
+              Text('Email: $email')
+            ],
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Đóng dialog
+              },
+              child: Text('Đóng'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -208,6 +338,19 @@ class _HistoryPageState extends State<HistoryPage> {
                                 'Dịch vụ: ${appointment.serviceId}',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
+                              GestureDetector(
+                                onTap: () {
+                                  _showCtvInfoDialog(appointment.idctv);
+                                },
+                                child: Text(
+                                  'ID CTV: ${appointment.idctv ?? 'n/a'}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 15,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ),
                               Text(
                                 getStatusText(appointment.status),
                                 style: TextStyle(
@@ -220,15 +363,64 @@ class _HistoryPageState extends State<HistoryPage> {
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                  'Thời gian: ${appointment.datetime.toString()}'),
+                              GestureDetector(
+                                onTap: () {
+                                  // Hiển thị dialog xác nhận hoàn thành khi người dùng bấm vào Text
+                                  if (appointment.status == '2') {
+                                    // Hiển thị dialog xác nhận hoàn thành khi người dùng bấm vào Text
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text('Xác nhận hoàn thành'),
+                                          content: Text(
+                                              'Bạn có chắc chắn muốn xác nhận hoàn thành không?'),
+                                          actions: <Widget>[
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.of(context)
+                                                    .pop(); // Đóng dialog
+                                                // Gọi hàm xác nhận hoàn thành ở đây
+                                                _confirmCompletion(appointment
+                                                    .idAppointment
+                                                    .toString());
+                                              },
+                                              child: Text('Xác nhận'),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.of(context)
+                                                    .pop(); // Đóng dialog
+                                              },
+                                              child: Text('Thoát'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    // Hiển thị thông báo khi status không phải là 2
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'Không thể xác nhận hoàn thành cho trạng thái khác "Đã nhận".'),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Text(
+                                  'Thời gian: ${appointment.datetime.toString()}',
+                                ),
+                              ),
                               Text('Giá: ${appointment.price}'),
                               Text(
-                                  'Mô tả công việc: ${appointment.description}'),
+                                'Mô tả công việc: ${appointment.description}',
+                              ),
                               Text('Phòng: ${appointment.roomSize}'),
                               Text('Mức độ dơ: ${appointment.dirtLevel}'),
                               Text(
-                                  'Phương thức thanh toán: ${transactionStatus.paymentMethod ?? 'n/a'}'),
+                                'Phương thức thanh toán: ${transactionStatus.paymentMethod ?? 'n/a'}',
+                              ),
                               Text(StatusPay(transactionStatus.statusPay)),
                             ],
                           ),

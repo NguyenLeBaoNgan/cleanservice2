@@ -212,6 +212,7 @@ class _MainPageState2 extends State<MainPage2> {
       });
   }
 
+  String addressValue = '';
   void updateFormattedDateTime() {
     formattedSelectedDate = "";
     if (selectedDate != null && selectedTime != null) {
@@ -483,7 +484,10 @@ class _MainPageState2 extends State<MainPage2> {
                         itemCount: listService.length,
                         shrinkWrap: true,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4),
+                          crossAxisCount: 4,
+                          childAspectRatio: MediaQuery.of(context).size.width /
+                              (MediaQuery.of(context).size.height / 2),
+                        ),
                         itemBuilder: (context, i) {
                           final x = listService[i];
                           return GestureDetector(
@@ -724,20 +728,20 @@ class _MainPageState2 extends State<MainPage2> {
                     enabled: false, // make the text field read-only
                   ),
                   SizedBox(height: 5),
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: address ?? 'N/A',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          width: 2,
-                          color: Colors.blue,
-                        ),
-                      ),
-                    ),
-                    enabled: false, // make the text field read-only
-                  ),
-                  SizedBox(height: 5),
+                  // TextField(
+                  //   decoration: InputDecoration(
+                  //     labelText: address ?? 'N/A',
+                  //     border: OutlineInputBorder(
+                  //       borderRadius: BorderRadius.circular(10),
+                  //       borderSide: BorderSide(
+                  //         width: 2,
+                  //         color: Colors.blue,
+                  //       ),
+                  //     ),
+                  //   ),
+                  //   enabled: false, // make the text field read-only
+                  // ),
+                  // SizedBox(height: 5),
                   TextFormField(
                     controller: addressController,
                     decoration: InputDecoration(
@@ -746,6 +750,12 @@ class _MainPageState2 extends State<MainPage2> {
                       suffixIcon: GestureDetector(
                         onTap: () {
                           // _openMapsAndPickLocation();
+                          String address = addressController.text;
+
+                          // Cập nhật giá trị vào biến và hiển thị trong TextField không thể chỉnh sửa
+                          setState(() {
+                            addressValue = address;
+                          });
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -943,7 +953,7 @@ class _MainPageState2 extends State<MainPage2> {
                   SizedBox(height: 5),
                   TextField(
                     decoration: InputDecoration(
-                      labelText: address ?? 'N/A',
+                      labelText: addressValue.isNotEmpty ? addressValue : 'N/A',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
@@ -952,8 +962,22 @@ class _MainPageState2 extends State<MainPage2> {
                         ),
                       ),
                     ),
-                    enabled: false, // make the text field read-only
+                    enabled: false,
                   ),
+                  //
+                  // TextField(
+                  //   decoration: InputDecoration(
+                  //     labelText: address ?? 'N/A',
+                  //     border: OutlineInputBorder(
+                  //       borderRadius: BorderRadius.circular(10),
+                  //       borderSide: BorderSide(
+                  //         width: 2,
+                  //         color: Colors.blue,
+                  //       ),
+                  //     ),
+                  //   ),
+                  //   enabled: false, // make the text field read-only
+                  // ),
                   SizedBox(
                     height: 15,
                   ),

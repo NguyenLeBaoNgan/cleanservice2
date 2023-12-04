@@ -56,6 +56,7 @@ class Appointment {
   String? userName;
   String? userPhone;
   String? userAddress;
+  String? idctv;
   // String? paymentMethod;
   // String? statuspay;
   Appointment({
@@ -73,6 +74,7 @@ class Appointment {
     this.userName,
     this.userPhone,
     this.userAddress,
+    this.idctv,
     // this.paymentMethod,
     // this.statuspay
   });
@@ -92,6 +94,7 @@ class Appointment {
     userName = json['user_name'];
     userPhone = json['user_phone'];
     userAddress = json['user_address'];
+    idctv = json['id_ctv'];
     // paymentMethod = json['payment_method'];
     // statuspay = json['status_pay'];
   }
@@ -112,6 +115,7 @@ class Appointment {
     data['user_name'] = this.userName;
     data['user_phone'] = this.userPhone;
     data['user_address'] = this.userAddress;
+    data['id_ctv'] = this.idctv;
     // data['payment_method'] = this.paymentMethod;
     // data['status_pay'] = this.statuspay;
     return data;

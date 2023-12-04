@@ -1,5 +1,5 @@
 class BASEURL {
-  static String ipAddress = "192.168.1.6";
+  static String ipAddress = "192.168.1.7:8080";
   static String apiRegister =
       "http://$ipAddress/testclean1_db/register_api.php";
   static String apiLogin = "http://$ipAddress/testclean1_db/login_api.php";
@@ -20,4 +20,10 @@ class BASEURL {
       "http://$ipAddress/testclean1_db/get_transaction.php";
   static String deleteapp =
       "http://$ipAddress/testclean1_db/delete_appointment.php";
+  static String confirmCompletion =
+      "http://$ipAddress/testclean1_db/confirmCompletion.php";
+  static String getbyidctv = "http://$ipAddress/testclean1_db/getbyidctv.php";
+
+  static String test = "http://$ipAddress/testclean1_db/test.php";
+  // static String searchService = "http://$ipAddress/testclean1_db/search.php";
 }

@@ -2,12 +2,12 @@ class User {
   final String name;
   final String address;
   final String sdt;
-  // final int userId;
+  final int userId;
   User({
     required this.name,
     required this.address,
     required this.sdt,
-    // required this.userId,
+    required this.userId,
   });
   // factory User.fromJson(Map<String, dynamic> data) {
   //   return User(

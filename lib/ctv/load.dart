@@ -85,7 +85,17 @@ class _loadState extends State<load> {
         context,
         MaterialPageRoute(
           builder: (context) {
-            return finish();
+            return FinishPage(
+              serviceModel: ServiceModel(
+                  createdat: '',
+                  description: '',
+                  idservice: '',
+                  image: '',
+                  name: '',
+                  price: '',
+                  status: ''),
+              selectedServiceID: '',
+            );
           },
         ),
       );
@@ -121,7 +131,7 @@ class _loadState extends State<load> {
                     'Đề cử',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
-                  Text('See all'),
+                  Text('Tất cả'),
                 ],
               ),
               SizedBox(
@@ -146,9 +156,11 @@ class _loadState extends State<load> {
                                   MaterialPageRoute(
                                     builder: (context) {
                                       return ThongTin(
-                                          appointment: appointment,
-                                          user: User(
-                                              name: "", address: "", sdt: ""));
+                                        appointment: appointment,
+                                        // user: User(
+                                        //     name: "", address: "", sdt: ""),
+                                        userID: '',
+                                      );
                                     },
                                   ),
                                 );

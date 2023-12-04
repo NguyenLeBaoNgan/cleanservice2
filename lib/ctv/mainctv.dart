@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cleanservice/ctv/finish.dart';
+import 'package:cleanservice/ctv/stats.dart';
 
 import '../ctv/quydoi.dart';
 import 'package:flutter/material.dart';
@@ -406,11 +407,23 @@ class _doanhthuState extends State<doanhthu> {
             ),
             // Content for the second tab
             Container(
-              child: finish(),
+              child: FinishPage(
+                serviceModel: ServiceModel(
+                    createdat: '',
+                    description: '',
+                    idservice: '',
+                    image: '',
+                    name: '',
+                    price: '',
+                    status: ''),
+                selectedServiceID: '',
+              ),
             ),
             // Content for the third tab
             Container(
-              child: StatisticalChart(),
+              child: MonthlyTotalsChart(
+                userID: '',
+              ),
             ),
           ],
         ),
@@ -420,118 +433,118 @@ class _doanhthuState extends State<doanhthu> {
 }
 
 //dạng cột
-class StatisticalChart extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Thống kê theo tháng',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16),
-            Container(
-              width: 400,
-              height: 400,
-              child: BarChart(
-                BarChartData(
-                  barGroups: [
-                    BarChartGroupData(
-                      x: 1,
-                      barRods: [
-                        BarChartRodData(toY: 80),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 2,
-                      barRods: [
-                        BarChartRodData(toY: 75),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 3,
-                      barRods: [
-                        BarChartRodData(toY: 58),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 4,
-                      barRods: [
-                        BarChartRodData(toY: 47),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 5,
-                      barRods: [
-                        BarChartRodData(toY: 78.5),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 6,
-                      barRods: [
-                        BarChartRodData(toY: 76),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 7,
-                      barRods: [
-                        BarChartRodData(toY: 66),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 8,
-                      barRods: [
-                        BarChartRodData(toY: 33),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 9,
-                      barRods: [
-                        BarChartRodData(toY: 54),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 10,
-                      barRods: [
-                        BarChartRodData(toY: 86),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 11,
-                      barRods: [
-                        BarChartRodData(toY: 78),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 12,
-                      barRods: [
-                        BarChartRodData(toY: 97),
-                      ],
-                    ),
-                    // Thêm các BarChartGroupData khác tương tự cho các tháng còn lại
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-            Text(
-              '1 - 12 là số tháng trong năm',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 8),
-            Text(
-              '20 - 100 là tỉ lệ % công việc trong 1 tháng',
-              style: TextStyle(fontSize: 16),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+// class StatisticalChart extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Text(
+//               'Thống kê theo tháng',
+//               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+//             ),
+//             SizedBox(height: 16),
+//             Container(
+//               width: 400,
+//               height: 400,
+//               child: BarChart(
+//                 BarChartData(
+//                   barGroups: [
+//                     BarChartGroupData(
+//                       x: 1,
+//                       barRods: [
+//                         BarChartRodData(toY: 80),
+//                       ],
+//                     ),
+//                     BarChartGroupData(
+//                       x: 2,
+//                       barRods: [
+//                         BarChartRodData(toY: 75),
+//                       ],
+//                     ),
+//                     BarChartGroupData(
+//                       x: 3,
+//                       barRods: [
+//                         BarChartRodData(toY: 58),
+//                       ],
+//                     ),
+//                     BarChartGroupData(
+//                       x: 4,
+//                       barRods: [
+//                         BarChartRodData(toY: 47),
+//                       ],
+//                     ),
+//                     BarChartGroupData(
+//                       x: 5,
+//                       barRods: [
+//                         BarChartRodData(toY: 78.5),
+//                       ],
+//                     ),
+//                     BarChartGroupData(
+//                       x: 6,
+//                       barRods: [
+//                         BarChartRodData(toY: 76),
+//                       ],
+//                     ),
+//                     BarChartGroupData(
+//                       x: 7,
+//                       barRods: [
+//                         BarChartRodData(toY: 66),
+//                       ],
+//                     ),
+//                     BarChartGroupData(
+//                       x: 8,
+//                       barRods: [
+//                         BarChartRodData(toY: 33),
+//                       ],
+//                     ),
+//                     BarChartGroupData(
+//                       x: 9,
+//                       barRods: [
+//                         BarChartRodData(toY: 54),
+//                       ],
+//                     ),
+//                     BarChartGroupData(
+//                       x: 10,
+//                       barRods: [
+//                         BarChartRodData(toY: 86),
+//                       ],
+//                     ),
+//                     BarChartGroupData(
+//                       x: 11,
+//                       barRods: [
+//                         BarChartRodData(toY: 78),
+//                       ],
+//                     ),
+//                     BarChartGroupData(
+//                       x: 12,
+//                       barRods: [
+//                         BarChartRodData(toY: 97),
+//                       ],
+//                     ),
+//                     // Thêm các BarChartGroupData khác tương tự cho các tháng còn lại
+//                   ],
+//                 ),
+//               ),
+//             ),
+//             SizedBox(height: 16),
+//             // Text(
+//             //   '1 - 12 là số tháng trong năm',
+//             //   style: TextStyle(fontSize: 16),
+//             // ),
+//             // SizedBox(height: 8),
+//             // Text(
+//             //   '20 - 100 là tỉ lệ % công việc trong 1 tháng',
+//             //   style: TextStyle(fontSize: 16),
+//             // ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 //--------------------------------------------------------------------//
 
 // class load extends StatelessWidget {

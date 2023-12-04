@@ -1,4 +1,5 @@
 import 'package:cleanservice/customer/homescreen.dart';
+import 'package:cleanservice/customer/main2.dart';
 import 'package:cleanservice/network/uri_api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -77,7 +78,7 @@ class _MomoState extends State<Momo> {
                     // disabledTextColor: Colors.black,
                     // padding: EdgeInsets.all(8.0),
                     // splashColor: Colors.blueAccent,
-                    child: Text('PAYMENT WITH MOMO'),
+                    child: Text('BÁM ĐỂ THANH TOÁN QUA MOMO'),
                     onPressed: () async {
                       sendPaymentStatus();
                       MomoPaymentInfo options = MomoPaymentInfo(
@@ -102,10 +103,15 @@ class _MomoState extends State<Momo> {
                       }
                     },
                   ),
-                  // ElevatedButton(
-                  //   onPressed: () => NewScreen(),
-                  //   child: Text('Quay về'),
-                  // ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MainPageAC()),
+                      );
+                    },
+                    child: Text('Quay về trang chủ'),
+                  ),
                 ],
               ),
               Text(_paymentStatus.isEmpty ? "CHƯA THANH TOÁN" : _paymentStatus)
@@ -128,12 +134,12 @@ class _MomoState extends State<Momo> {
       _paymentStatus += "\nTình trạng: Thành công.";
       _paymentStatus +=
           "\nSố điện thoại: " + _momoPaymentResult.phoneNumber.toString();
-      _paymentStatus += "\nExtra: " + _momoPaymentResult.extra!;
-      _paymentStatus += "\nToken: " + _momoPaymentResult.token.toString();
+      // _paymentStatus += "\nExtra: " + _momoPaymentResult.extra!;
+      // _paymentStatus += "\nToken: " + _momoPaymentResult.token.toString();
     } else {
       _paymentStatus += "\nTình trạng: Thất bại.";
-      _paymentStatus += "\nExtra: " + _momoPaymentResult.extra.toString();
-      _paymentStatus += "\nMã lỗi: " + _momoPaymentResult.status.toString();
+      // _paymentStatus += "\nExtra: " + _momoPaymentResult.extra.toString();
+      // _paymentStatus += "\nMã lỗi: " + _momoPaymentResult.status.toString();
     }
   }
 
