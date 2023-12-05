@@ -26,4 +26,17 @@ class BASEURL {
 
   static String test = "http://$ipAddress/testclean1_db/test.php";
   // static String searchService = "http://$ipAddress/testclean1_db/search.php";
+  //admin
+  static String khAdmin = "http://$ipAddress/testclean1_db/khachhangAdmin.php";
+  static String deleteCustomer =
+      "http://$ipAddress/testclean1_db/deleteuser.php";
+  static String ctvAdmin = "http://$ipAddress/testclean1_db/CTVAdmin.php";
+  static String datlichAdmin =
+      "http://$ipAddress/testclean1_db/DichVuAdmin.php";
+  static String chuyendoi = "http://$ipAddress/testclean1_db/chuyendoi.php";
+  static String chuyendoi1 = "http://$ipAddress/testclean1_db/chuyendoi1.php";
+  static String serviceAdmin =
+      "http://$ipAddress/testclean1_db/serviceAdmin.php";
+  static String layid = "http://$ipAddress/testclean1_db/layid.php";
+  static String capnhatKh = "http://$ipAddress/testclean1_db/edit.php";
 }

@@ -1,6 +1,7 @@
 // import 'dart:ffi';
 import 'dart:io';
 
+import 'package:cleanservice/admin/homeadmin.dart';
 import 'package:cleanservice/ctv/button.dart';
 import 'package:cleanservice/ctv/mainctv.dart';
 import 'package:cleanservice/network/uri_api.dart';
@@ -119,8 +120,8 @@ class _LoginPageState extends State<LoginPage> {
       savePref(idUser, name, email, phone, address, createdAt);
       //
       if (roleId == 1) {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => ForgotPasswordPage()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => AdminHomePage()));
       } else if (roleId == 2) {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => MainPageAC()));

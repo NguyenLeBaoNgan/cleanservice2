@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:cleanservice/models/pref_profile_model.dart';
+import 'package:cleanservice/network/uri_api.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +15,7 @@ import 'forgot_password_verification_page.dart';
 import 'registration_page.dart';
 import 'package:cleanservice/customer/main2.dart';
 import '../pages/home_page.dart';
+import 'package:http/http.dart' as http;
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -164,7 +168,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     size: _drawerIconSize,
                     color: Theme.of(context).colorScheme.secondary),
                 title: Text(
-                  'Trang đăng nhập',
+                  'Trang đăng nhập (ĐĂNG XUẤT)',
                   style: TextStyle(
                       fontSize: _drawerFontSize,
                       color: Theme.of(context).colorScheme.secondary),
@@ -250,22 +254,22 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: Theme.of(context).primaryColor,
                 height: 1,
               ),
-              ListTile(
-                leading: Icon(
-                  Icons.logout_rounded,
-                  size: _drawerIconSize,
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-                title: Text(
-                  'đăng xuất',
-                  style: TextStyle(
-                      fontSize: _drawerFontSize,
-                      color: Theme.of(context).colorScheme.secondary),
-                ),
-                onTap: () {
-                  SystemNavigator.pop();
-                },
-              ),
+              // ListTile(
+              //   leading: Icon(
+              //     Icons.logout_rounded,
+              //     size: _drawerIconSize,
+              //     color: Theme.of(context).colorScheme.secondary,
+              //   ),
+              //   title: Text(
+              //     'đăng xuất',
+              //     style: TextStyle(
+              //         fontSize: _drawerFontSize,
+              //         color: Theme.of(context).colorScheme.secondary),
+              //   ),
+              //   onTap: () {
+              //     SystemNavigator.pop();
+              //   },
+              // ),
               Divider(
                 color: Theme.of(context).primaryColor,
                 height: 1,
@@ -441,10 +445,154 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ],
                     ),
-                  )
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditProfilePage(),
+                        ),
+                      );
+                    },
+                    child: Text("Sửa thông tin"),
+                  ),
                 ],
               ),
             )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class EditProfilePage extends StatefulWidget {
+  @override
+  _EditProfilePageState createState() => _EditProfilePageState();
+}
+
+class _EditProfilePageState extends State<EditProfilePage> {
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
+  TextEditingController _addressController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+
+  Future<void> saveChanges() async {
+    // Get user data from SharedPreferences
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    int idUser = sharedPreferences.getInt(PreProfile.idUser) ?? 0;
+
+    // Get the updated values from text controllers
+    String name = _nameController.text;
+    String phone = _phoneController.text;
+    String address = _addressController.text;
+    String email = _emailController.text; // Get email from TextField
+
+    try {
+      // Send a POST request to update user information
+      final response = await http.post(
+        Uri.parse(BASEURL.capnhatKh),
+        body: {
+          'id_user': idUser.toString(),
+          'name': name,
+          'phone': phone,
+          'address': address,
+          'email': email,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Handle the response from the server (if needed)
+        var data = json.decode(response.body);
+        print(data);
+
+        // You may want to update the information in SharedPreferences here
+
+        // Navigate back to the profile page
+        Navigator.pop(context);
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future<void> getUserDataByEmail() async {
+    // Comment out the line below, as you don't need email from SharedPreferences
+    // String email = sharedPreferences.getString(PreProfile.email) ?? "";
+
+    // Instead, use the email from the TextField directly
+    String email = _emailController.text;
+
+    final response = await http.post(
+      Uri.parse(BASEURL.layid),
+      body: {'email': email},
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+
+      if (data['value'] == 1) {
+        setState(() {
+          _nameController.text = data['name'] ?? "";
+          _phoneController.text = data['phone'] ?? "";
+          _addressController.text = data['address'] ?? "";
+          _emailController.text = data['email'] ?? "";
+        });
+      } else {
+        print('Failed to get user data: ${data['message']}');
+      }
+    } else {
+      print(
+          'Failed to get user data. Server responded with status ${response.statusCode}');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserDataByEmail();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Sửa thông tin"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: InputDecoration(labelText: 'Họ và tên'),
+            ),
+            TextField(
+              controller: _phoneController,
+              decoration: InputDecoration(labelText: 'Số điện thoại'),
+            ),
+            TextField(
+              controller: _addressController,
+              decoration: InputDecoration(labelText: 'Địa chỉ'),
+            ),
+            TextField(
+              controller: _emailController,
+              decoration: InputDecoration(labelText: 'Email'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                saveChanges(); // Call the function to save changes
+              },
+              child: Text('Lưu thay đổi'),
+            ),
           ],
         ),
       ),
